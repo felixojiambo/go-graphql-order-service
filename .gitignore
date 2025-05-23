@@ -1,0 +1,13 @@
+﻿# Binaries
+/bin/
+/vendor/
+
+# IDE / Editor
+*.swp
+*.swo
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
