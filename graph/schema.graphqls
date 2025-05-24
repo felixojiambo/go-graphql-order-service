@@ -1,0 +1,41 @@
+
+# ----- Types -----
+type Category {
+  id: ID!
+  name: String!
+  parent: Category
+  children: [Category!]!      # Immediate children
+}
+
+type Product {
+  id: ID!
+  name: String!
+  description: String
+  price: Float!
+  category: Category!
+}
+
+# ----- Inputs -----
+input NewCategory {
+  name: String!
+  parentID: ID
+}
+
+input NewProduct {
+  name: String!
+  description: String
+  price: Float!
+  categoryID: ID!
+}
+
+# ----- Queries -----
+type Query {
+  categories: [Category!]!                             # List all root categories
+  productsByCategory(categoryID: ID!): [Product!]!     # All products in a category subtree
+}
+
+# ----- Mutations -----
+type Mutation {
+  createCategory(input: NewCategory!): Category!
+  createProduct(input: NewProduct!): Product!
+}
