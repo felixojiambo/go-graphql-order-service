@@ -37,12 +37,12 @@ type Product struct {
 
 // Order represents a customer purchase.
 type Order struct {
-	ID          uuid.UUID `db:"id"`
-	CustomerID  uuid.UUID `db:"customer_id"`
-	TotalAmount float64   `db:"total_amount"`
-	Status      string    `db:"status"`
-	CreatedAt   time.Time `db:"created_at"`
-	UpdatedAt   time.Time `db:"updated_at"`
+	ID         uuid.UUID `db:"id"`
+	CustomerID uuid.UUID `db:"customer_id"`
+	Total      float64   `db:"total_amount"`
+	Status     string    `db:"status"`
+	CreatedAt  time.Time `db:"created_at"`
+	UpdatedAt  time.Time `db:"updated_at"`
 }
 
 // OrderItem links products to an order.
@@ -53,4 +53,5 @@ type OrderItem struct {
 	Quantity  int       `db:"quantity"`
 	UnitPrice float64   `db:"unit_price"`
 	CreatedAt time.Time `db:"created_at"`
+	UpdatedAt time.Time `db:"updated_at"`
 }

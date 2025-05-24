@@ -1,21 +1,22 @@
 package graphql
 
-import "github.com/felixojiambo/go-graphql-order-service/internal/db"
+import (
+	"github.com/felixojiambo/go-graphql-order-service/internal/db"
+	"github.com/felixojiambo/go-graphql-order-service/internal/notification"
+)
 
-// Resolver serves as the dependency injector for all your GraphQL resolvers.
-// Add any repositories or services this server requires here.
 type Resolver struct {
-	CategoryRepo db.CategoryRepository
-	ProductRepo  db.ProductRepository
+	CategoryRepo    db.CategoryRepository
+	ProductRepo     db.ProductRepository
+	OrderRepo       db.OrderRepository
+	NotificationSvc notification.NotificationService
 }
 
-// NewResolver constructs a Resolver with the required dependencies.
 func NewResolver(
-	categoryRepo db.CategoryRepository,
-	productRepo db.ProductRepository,
+	cat db.CategoryRepository,
+	prod db.ProductRepository,
+	ord db.OrderRepository,
+	notif notification.NotificationService,
 ) *Resolver {
-	return &Resolver{
-		CategoryRepo: categoryRepo,
-		ProductRepo:  productRepo,
-	}
+	return &Resolver{cat, prod, ord, notif}
 }

@@ -1,3 +1,4 @@
+scalar Time
 
 # ----- Types -----
 type Category {
@@ -32,11 +33,41 @@ input NewProduct {
 type Query {
   categories: [Category!]!                             # List all root categories
   productsByCategory(categoryID: ID!): [Product!]!     # All products in a category subtree
-  averagePriceByCategory(categoryID: ID!): Float!
+  averagePriceByCategory(categoryID: ID!): Float!      # ← NEW
 }
 
 # ----- Mutations -----
 type Mutation {
   createCategory(input: NewCategory!): Category!
   createProduct(input: NewProduct!): Product!
+}
+
+type Order {
+  id: ID!
+  customerID: ID!
+  items: [OrderItem!]!
+  total: Float!
+  createdAt: Time!
+}
+
+type OrderItem {
+  id: ID!
+  product: Product!
+  quantity: Int!
+  price: Float!
+}
+
+input OrderItemInput {
+  productID: ID!
+  quantity: Int!
+}
+
+input OrderInput {
+  customerID: ID!
+  items: [OrderItemInput!]!
+}
+
+extend type Mutation {
+  placeOrder(input: OrderInput!): Order!
+  
 }
