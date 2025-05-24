@@ -2,6 +2,10 @@
 
 package graphql
 
+import (
+	"time"
+)
+
 type Category struct {
 	ID       string      `json:"id"`
 	Name     string      `json:"name"`
@@ -22,6 +26,31 @@ type NewProduct struct {
 	Description *string `json:"description,omitempty"`
 	Price       float64 `json:"price"`
 	CategoryID  string  `json:"categoryID"`
+}
+
+type Order struct {
+	ID         string       `json:"id"`
+	CustomerID string       `json:"customerID"`
+	Items      []*OrderItem `json:"items"`
+	Total      float64      `json:"total"`
+	CreatedAt  time.Time    `json:"createdAt"`
+}
+
+type OrderInput struct {
+	CustomerID string            `json:"customerID"`
+	Items      []*OrderItemInput `json:"items"`
+}
+
+type OrderItem struct {
+	ID       string   `json:"id"`
+	Product  *Product `json:"product"`
+	Quantity int      `json:"quantity"`
+	Price    float64  `json:"price"`
+}
+
+type OrderItemInput struct {
+	ProductID string `json:"productID"`
+	Quantity  int    `json:"quantity"`
 }
 
 type Product struct {
