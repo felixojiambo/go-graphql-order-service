@@ -25,6 +25,9 @@ type ProductRepository interface {
 	Create(ctx context.Context, p *Product) error
 	GetByID(ctx context.Context, id uuid.UUID) (*Product, error)
 	ListByCategory(ctx context.Context, categoryID uuid.UUID) ([]*Product, error)
+
+	// compute the average price of all products in the subtree of categoryID.
+	AveragePriceByCategory(ctx context.Context, categoryID uuid.UUID) (float64, error)
 }
 
 // OrderRepository manages orders and items.

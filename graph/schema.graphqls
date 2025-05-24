@@ -32,6 +32,7 @@ input NewProduct {
 type Query {
   categories: [Category!]!                             # List all root categories
   productsByCategory(categoryID: ID!): [Product!]!     # All products in a category subtree
+  averagePriceByCategory(categoryID: ID!): Float!
 }
 
 # ----- Mutations -----

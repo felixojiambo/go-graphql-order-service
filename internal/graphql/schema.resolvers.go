@@ -129,6 +129,17 @@ func (r *queryResolver) ProductsByCategory(ctx context.Context, categoryID strin
 	return out, nil
 }
 
+// AveragePriceByCategory returns the average price of all products in a category subtree.
+func (r *queryResolver) AveragePriceByCategory(ctx context.Context, categoryID string) (float64, error) {
+	// parse & validate
+	cid, err := uuid.Parse(categoryID)
+	if err != nil {
+		return 0, errors.New("invalid categoryID")
+	}
+	// delegate to repo
+	return r.ProductRepo.AveragePriceByCategory(ctx, cid)
+}
+
 // Category returns CategoryResolver implementation.
 func (r *Resolver) Category() CategoryResolver { return &categoryResolver{r} }
 
