@@ -5,6 +5,8 @@ import (
 	"github.com/felixojiambo/go-graphql-order-service/internal/notification"
 )
 
+// Resolver is the root dependency‐injection struct for all GraphQL resolvers.
+
 type Resolver struct {
 	CategoryRepo    db.CategoryRepository
 	ProductRepo     db.ProductRepository
@@ -18,5 +20,10 @@ func NewResolver(
 	ord db.OrderRepository,
 	notif notification.NotificationService,
 ) *Resolver {
-	return &Resolver{cat, prod, ord, notif}
+	return &Resolver{
+		CategoryRepo:    cat,
+		ProductRepo:     prod,
+		OrderRepo:       ord,
+		NotificationSvc: notif,
+	}
 }
