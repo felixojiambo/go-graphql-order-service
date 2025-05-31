@@ -1,3 +1,4 @@
+// internal/graphql/schema.resolvers.go
 package graphql
 
 import (
@@ -6,12 +7,17 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/felixojiambo/go-graphql-order-service/internal/auth"
 	"github.com/felixojiambo/go-graphql-order-service/internal/db"
 	"github.com/google/uuid"
 )
 
 // Children resolves immediate subcategories for a Category.
+// This is unprotected (any authenticated user can list the category tree).
 func (r *categoryResolver) Children(ctx context.Context, obj *Category) ([]*Category, error) {
+	// (Optional) You could check a role here if you needed to restrict “viewing” the tree.
+	// e.g. if !auth.HasRole(ctx, "viewer") { return nil, errors.New("unauthorized") }
+
 	cid, err := uuid.Parse(obj.ID)
 	if err != nil {
 		return nil, err
@@ -32,7 +38,12 @@ func (r *categoryResolver) Children(ctx context.Context, obj *Category) ([]*Cate
 }
 
 // CreateCategory persists a new category.
+// Only users with the “admin” role may create a category.
 func (r *mutationResolver) CreateCategory(ctx context.Context, input NewCategory) (*Category, error) {
+	if !auth.HasRole(ctx, "admin") {
+		return nil, errors.New("unauthorized: must have 'admin' role to create categories")
+	}
+
 	var parentID *uuid.UUID
 	if input.ParentID != nil {
 		pid, err := uuid.Parse(*input.ParentID)
@@ -62,7 +73,12 @@ func (r *mutationResolver) CreateCategory(ctx context.Context, input NewCategory
 }
 
 // CreateProduct persists a new product.
+// Only users with the “admin” role may create products.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input NewProduct) (*Product, error) {
+	if !auth.HasRole(ctx, "admin") {
+		return nil, errors.New("unauthorized: must have 'admin' role to create products")
+	}
+
 	catID, err := uuid.Parse(input.CategoryID)
 	if err != nil {
 		return nil, errors.New("invalid categoryID")
@@ -89,7 +105,9 @@ func (r *mutationResolver) CreateProduct(ctx context.Context, input NewProduct) 
 }
 
 // Categories returns all root categories.
+// Any authenticated user can call this.
 func (r *queryResolver) Categories(ctx context.Context) ([]*Category, error) {
+	// (Optional) you could require a particular role here
 	dbCats, err := r.CategoryRepo.ListChildren(ctx, nil)
 	if err != nil {
 		return nil, err
@@ -105,7 +123,9 @@ func (r *queryResolver) Categories(ctx context.Context) ([]*Category, error) {
 }
 
 // ProductsByCategory returns all products in a category subtree.
+// Any authenticated user can call this.
 func (r *queryResolver) ProductsByCategory(ctx context.Context, categoryID string) ([]*Product, error) {
+	// (Optional) require a role if needed
 	cid, err := uuid.Parse(categoryID)
 	if err != nil {
 		return nil, errors.New("invalid categoryID")
@@ -128,7 +148,9 @@ func (r *queryResolver) ProductsByCategory(ctx context.Context, categoryID strin
 }
 
 // AveragePriceByCategory returns the average price of all products in a category subtree.
+// Any authenticated user can call this (if you want, you could restrict to "analyst" role, etc).
 func (r *queryResolver) AveragePriceByCategory(ctx context.Context, categoryID string) (float64, error) {
+	// (Optional) if !auth.HasRole(ctx, "analyst") { return 0, errors.New("unauthorized") }
 	cid, err := uuid.Parse(categoryID)
 	if err != nil {
 		return 0, errors.New("invalid categoryID")
@@ -137,7 +159,12 @@ func (r *queryResolver) AveragePriceByCategory(ctx context.Context, categoryID s
 }
 
 // PlaceOrder is the resolver for the placeOrder field.
+// Only users with the “customer” role may place orders.
 func (r *mutationResolver) PlaceOrder(ctx context.Context, input OrderInput) (*Order, error) {
+	if !auth.HasRole(ctx, "customer") {
+		return nil, errors.New("unauthorized: must have 'customer' role to place orders")
+	}
+
 	// 1) parse & validate customerID
 	custID, err := uuid.Parse(input.CustomerID)
 	if err != nil {
