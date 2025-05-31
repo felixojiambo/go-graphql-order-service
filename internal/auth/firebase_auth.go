@@ -1,3 +1,4 @@
+// internal/auth/firebase.go
 package auth
 
 import (
